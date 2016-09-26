@@ -24,7 +24,9 @@ public class FlockManager : MonoBehaviour {
 	void Update () {
         foreach (var sheep in sheepList) {
             SheepBehaviour sheepScript = (SheepBehaviour)sheep.GetComponent(typeof(SheepBehaviour));
-            sheepScript.updateSheep();
+
+            // Passing the entire list of sheep to each sheep individually.
+            sheepScript.updateSheep(sheepList);
         }
 	}
 
