@@ -12,4 +12,9 @@ public class SheepBehaviour : MonoBehaviour {
 	void Update () {
 	
 	}
+
+    // UpdateSheep is called from the FlockManager class.
+    public void updateSheep() {
+        
+    }
 }

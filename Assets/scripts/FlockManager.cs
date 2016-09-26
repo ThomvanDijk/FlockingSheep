@@ -22,7 +22,10 @@ public class FlockManager : MonoBehaviour {
 	
 	// Update is called once per frame.
 	void Update () {
-	
+        foreach (var sheep in sheepList) {
+            SheepBehaviour sheepScript = (SheepBehaviour)sheep.GetComponent(typeof(SheepBehaviour));
+            sheepScript.updateSheep();
+        }
 	}
 
     private void addSheep() {
