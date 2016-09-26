@@ -6,19 +6,19 @@ public class CameraMovement : MonoBehaviour {
     public float scrollSpeed;
     float diagonalSpeed;
 
-    // Use this for initialization
+    // Use this for initialization.
     void Start() {
         scrollSpeed = 10;
         // The diagonal speed is so that the camera moves always with 
-        // the same speed in one of the 8 directions
+        // the same speed in one of the 8 directions.
         diagonalSpeed = Mathf.Sqrt(Mathf.Pow(scrollSpeed, 2) / 2);
     }
 
-    // Update is called once per frame
+    // Update is called once per frame.
     void Update() {
         float t = Time.deltaTime;
 
-        // Here all the 8 key combinations are checked
+        // Here all the 8 key combinations are checked.
         if (Input.GetKey("w") && Input.GetKey("a")) {
             this.transform.Translate(Vector3.forward * scrollSpeed * t, Space.World);
         }

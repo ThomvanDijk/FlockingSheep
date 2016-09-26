@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 using System.Collections;
 
 public class FlockManager : MonoBehaviour {
@@ -7,8 +8,11 @@ public class FlockManager : MonoBehaviour {
     public GameObject sheepPrefab;
     public Transform sheepSpawn;
 
-    // Use this for initialization
+    private List<GameObject> sheepList;
+
+    // Use this for initialization.
     void Start () {
+        sheepList = new List<GameObject>();
 
         // Here the flock is created.
         for (int i = 0; i < numberOfSheep; i++) {
@@ -16,13 +20,18 @@ public class FlockManager : MonoBehaviour {
         }
     }
 	
-	// Update is called once per frame
+	// Update is called once per frame.
 	void Update () {
 	
 	}
 
     private void addSheep() {
-        // Create sheep
+        // Create sheep.
         GameObject sheep = (GameObject)Instantiate(sheepPrefab, sheepSpawn.position, sheepSpawn.rotation);
+
+        // Add sheep to list.
+        sheepList.Add(sheep);
+
+        //Debug.Log(sheepList.Count);
     }
 }
