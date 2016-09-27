@@ -27,13 +27,13 @@ public class CustomVector2 : MonoBehaviour {
     }
 
     // info (getters)
-    public double mag() {
+    public float mag() {
         float getal = (x * x) + (y * y);
         float pos = Mathf.Sqrt(getal);
         return pos;
     }
 
-    public double dist(CustomVector2 other) {
+    public float dist(CustomVector2 other) {
         float p1 = this.x - other.x;
         float p2 = this.y - other.y;
         return Mathf.Sqrt(Mathf.Pow(p1, 2) + Mathf.Pow(p2, 2));
