@@ -29,24 +29,11 @@ public class SheepBehaviour : MonoBehaviour {
 
         diameter = 32;
     }
-	
-	// Update is called once per frame.
-	void Update() {
-        velocity.add(acceleration);
-
-        rotation = CustomVector2.deg2rad(velocity.getAngle());
-
-        velocity.limit(maxspeed);
-        position.add(velocity);
-
-        acceleration.multS(0);
-
-        this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
-    }
 
     // UpdateSheep is called from the FlockManager class.
     public void updateSheep(List<GameObject> sheepList) {
         flock(sheepList);
+        updatePosition();
     }
 
     // We accumulate a new acceleration each time based on three rules.
@@ -65,9 +52,23 @@ public class SheepBehaviour : MonoBehaviour {
         applyForce(ali);
         applyForce(coh);
     }
-
+    
     void applyForce(CustomVector2 force) {
         acceleration.add(force);
+    }
+    
+    // Method to update position.
+    void updatePosition() {
+        velocity.add(acceleration);
+
+        rotation = CustomVector2.deg2rad(velocity.getAngle());
+
+        velocity.limit(maxspeed);
+        position.add(velocity);
+
+        acceleration.multS(0);
+
+        this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
     }
 
     // Separation.

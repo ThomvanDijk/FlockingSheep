@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 
-public class CustomVector2 : MonoBehaviour {
+public struct CustomVector2 {
 
     // properties
     public float x;

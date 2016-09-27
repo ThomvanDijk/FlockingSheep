@@ -7,8 +7,8 @@ public class GridCreation : MonoBehaviour {
 
     // Use this for initialization.
     void Start () {
-        int gridWidth = 50;
-        int gridHeight = 50;
+        int gridWidth = 100;
+        int gridHeight = 100;
 
         // Create the grid.
         for (int row = 0; row < gridHeight; row++) {
