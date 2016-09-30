@@ -14,8 +14,6 @@ public class SheepBehaviour : MonoBehaviour {
     private float separation;       // Separation between two boids.
     private float rotation;
 
-    private int diameter;
-
     // Use this for initialization.
     void Start() {
         position = new Vector2(this.transform.position.x, this.transform.position.z);
@@ -23,13 +21,10 @@ public class SheepBehaviour : MonoBehaviour {
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
 
-        maxforce = 0.04f;
-        //maxforce = Random.Range(0, 100);
-        maxspeed = 0.1f;
-        neighbordist = 20;
-        separation = 20;
-
-        diameter = 32;
+        maxforce = 0.1f;
+        maxspeed = 0.05f;
+        neighbordist = 120;    // Neighbor detection range.
+        separation = 40;       // The distance for the seperation-force to apply.
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -45,9 +40,9 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 coh = cohesion(sheepList);
 
         // Arbitrarily weight these forces.
-        sep = sep.multS(1.0f);
-        ali = ali.multS(1.0f);
-        coh = coh.multS(1.0f);
+        sep = sep.multS(0.1f);
+        ali = ali.multS(0.2f);
+        coh = coh.multS(0.1f);
 
         // Add the force vectors to acceleration.
         applyForce(sep);
