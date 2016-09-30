@@ -7,12 +7,11 @@ public class SheepBehaviour : MonoBehaviour {
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
-    private Vector2 test;
 
-    private float maxforce;         //Maximum steering force.
-    private float maxspeed;         //Maximum speed.
-    private float neighbordist;     //Detection range.
-    private float separation;       //Separation between two boids.
+    private float maxforce;         // Maximum steering force.
+    private float maxspeed;         // Maximum speed.
+    private float neighbordist;     // Detection range.
+    private float separation;       // Separation between two boids.
     private float rotation;
 
     private int diameter;
@@ -20,15 +19,15 @@ public class SheepBehaviour : MonoBehaviour {
     // Use this for initialization.
     void Start() {
         position = new Vector2(this.transform.position.x, this.transform.position.z);
-        velocity = new Vector2(0, 0);
+        float angle = (Random.Range(0, 101) * 0.01f) * (Mathf.PI * 2);
+        velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
-        test = new Vector2(this.transform.position.x, this.transform.position.z);
 
         maxforce = 0.04f;
         //maxforce = Random.Range(0, 100);
-        maxspeed = 3.0f;
-        neighbordist = 120;
-        separation = 40;
+        maxspeed = 0.1f;
+        neighbordist = 20;
+        separation = 20;
 
         diameter = 32;
     }
@@ -46,9 +45,9 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 coh = cohesion(sheepList);
 
         // Arbitrarily weight these forces.
-        sep.multS(1.8f);
-        ali.multS(1.0f);
-        coh.multS(1.0f);
+        sep = sep.multS(1.0f);
+        ali = ali.multS(1.0f);
+        coh = coh.multS(1.0f);
 
         // Add the force vectors to acceleration.
         applyForce(sep);
@@ -57,24 +56,23 @@ public class SheepBehaviour : MonoBehaviour {
     }
 
     void applyForce(Vector2 force) {
-        acceleration.add(force);
+        acceleration = acceleration.add(force);
     }
 
     // Method to update position.
     void updatePosition() {
-        velocity.add(acceleration);
+        velocity = velocity.add(acceleration);
 
         rotation = velocity.getAngle() * (180 / Mathf.PI);
-
         // a * (180 / Mathf.PI); rad2deg
         // a * (Mathf.PI / 180); deg2rad
 
         //this.transform.rotation = Quaternion.EulerRotation();
 
-        velocity.limit(maxspeed);
-        position.add(velocity);
+        velocity = velocity.limit(maxspeed);
+        position = position.add(velocity);
 
-        acceleration.multS(0); // Reset acceleration.
+        acceleration = acceleration.multS(0); // Reset acceleration.
 
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
     }
@@ -95,24 +93,24 @@ public class SheepBehaviour : MonoBehaviour {
                 Vector2 locationcopy = new Vector2(position.x, position.y);
                 Vector2 diff = locationcopy.sub(other.GetComponent<SheepBehaviour>().position);
 
-                diff.normalize();
-                diff.divS(d);       // Weight by distance.
-                sum.add(diff);
+                diff = diff.normalize();
+                diff = diff.divS(d);       // Weight by distance.
+                sum = sum.add(diff);
                 count++;            // Keep track of how many.
             }
         }
 
         // Average -- divide by how many.
         if (count > 0) {
-            sum.divS(count);
-            sum.normalize();
+            sum = sum.divS(count);
+            sum = sum.normalize();
         }
 
         // As long as the vector is greater than 0.
         if (sum.mag() > 0) {
-            sum.multS(maxspeed);
+            sum = sum.multS(maxspeed);
             Vector2 steer = sum.sub(velocity);
-            steer.limit(maxforce);
+            steer = steer.limit(maxforce);
         }
         return sum;
     }
@@ -122,21 +120,24 @@ public class SheepBehaviour : MonoBehaviour {
     public Vector2 align(List<GameObject> sheepList) {
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
+
         foreach (var other in sheepList) {
             float d = position.dist(other.GetComponent<SheepBehaviour>().position);
             if ((d > 0) && (d < neighbordist)) {
-                sum.add(other.GetComponent<SheepBehaviour>().velocity);
+                sum = sum.add(other.GetComponent<SheepBehaviour>().velocity);
                 count++;
             }
         }
+
         if (count > 0) {
-            sum.divS(count);
-            sum.normalize();
-            sum.multS(maxspeed);
+            sum = sum.divS(count);
+            sum = sum.normalize();
+            sum = sum.multS(maxspeed);
             Vector2 steer = sum.sub(velocity);
-            steer.limit(maxforce);
+            steer = steer.limit(maxforce);
             return steer;
         }
+
         else {
             return new Vector2(0, 0);
         }
@@ -150,12 +151,12 @@ public class SheepBehaviour : MonoBehaviour {
         foreach (var other in sheepList) {
             float d = position.dist(other.GetComponent<SheepBehaviour>().position);
             if ((d > 0) && (d < neighbordist)) {
-                sum.add(other.GetComponent<SheepBehaviour>().position); // Add location
+                sum = sum.add(other.GetComponent<SheepBehaviour>().position); // Add location
                 count++;
             }
         }
         if (count > 0) {
-            sum.divS(count);
+            sum = sum.divS(count);
             return seek(sum);  // Steer towards the location.
         }
         else {
@@ -168,10 +169,10 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 targetcopy = new Vector2(target.x, target.y);
         Vector2 desired = targetcopy.sub(position);
 
-        desired.normalize();
-        desired.multS(maxspeed);
+        desired = desired.normalize();
+        desired = desired.multS(maxspeed);
         Vector2 steer = desired.sub(velocity);
-        steer.limit(maxforce);
+        steer = steer.limit(maxforce);
 
         return steer;
     }
