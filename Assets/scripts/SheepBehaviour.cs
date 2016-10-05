@@ -14,6 +14,9 @@ public class SheepBehaviour : MonoBehaviour {
     private float separation;       // Separation between two boids.
     private float rotation;
 
+    private List<float> rotationList;
+    private int numberOfElements;
+
     // Use this for initialization.
     void Start() {
         position = new Vector2(this.transform.position.x, this.transform.position.z);
@@ -21,10 +24,13 @@ public class SheepBehaviour : MonoBehaviour {
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
 
-        maxforce = 0.02f;
-        maxspeed = 0.5f;
+        maxforce = 0.01f;
+        maxspeed = 0.02f;
         neighbordist = 10;   // Neighbor detection range.
         separation = 5;    // The distance for the seperation-force to apply.
+
+        rotationList = new List<float> {0, 0, 0, 0, 0, 0, 0};
+        numberOfElements = 7;
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -67,11 +73,21 @@ public class SheepBehaviour : MonoBehaviour {
         rotation *= -1;
         rotation += 90;
 
-        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
+        rotationList.Add(rotation);
+
+        int count = rotationList.Count;
+        if (count > numberOfElements) {
+            rotationList.RemoveAt(0);
+        }
+
+        float avgRotation = (rotationList[0] + rotationList[1] +
+            rotationList[2] + rotationList[3] + rotationList[4] +
+            rotationList[5] + rotationList[6]) / numberOfElements;
+
+        this.transform.rotation = Quaternion.Euler(0, avgRotation, 0);
 
         velocity = velocity.limit(maxspeed);
         position = position.add(velocity);
-
         acceleration = acceleration.multS(0);   // Reset acceleration.
 
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);

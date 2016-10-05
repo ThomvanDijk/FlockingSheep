@@ -33,9 +33,9 @@ public class FlockManager : MonoBehaviour {
     private void addSheep() {
         // Create sheep wit random position.
         GameObject sheep = (GameObject)Instantiate(sheepPrefab, new Vector3(
-            sheepSpawn.position.x + Random.Range(0, 200), 
+            sheepSpawn.position.x + Random.Range(0, 2), 
             sheepSpawn.position.y,
-            sheepSpawn.position.z + Random.Range(0, 200)), 
+            sheepSpawn.position.z + Random.Range(0, 2)), 
             sheepSpawn.rotation);
 
         // Add sheep to list.
