@@ -21,10 +21,10 @@ public class SheepBehaviour : MonoBehaviour {
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
 
-        maxforce = 0.1f;
-        maxspeed = 0.05f;
-        neighbordist = 120;    // Neighbor detection range.
-        separation = 40;       // The distance for the seperation-force to apply.
+        maxforce = 0.02f;
+        maxspeed = 0.5f;
+        neighbordist = 10;   // Neighbor detection range.
+        separation = 5;    // The distance for the seperation-force to apply.
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -40,9 +40,13 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 coh = cohesion(sheepList);
 
         // Arbitrarily weight these forces.
-        sep = sep.multS(0.1f);
+        sep = sep.multS(0.3f);
         ali = ali.multS(0.2f);
-        coh = coh.multS(0.1f);
+        coh = coh.multS(0.2f);
+
+        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(sep.x, 0, sep.y) * 100)), Color.red);
+        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(ali.x, 0, ali.y) * 200)), Color.blue);
+        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(coh.x, 0, coh.y) * 100)), Color.green);
 
         // Add the force vectors to acceleration.
         applyForce(sep);
@@ -58,18 +62,21 @@ public class SheepBehaviour : MonoBehaviour {
     void updatePosition() {
         velocity = velocity.add(acceleration);
 
-        rotation = velocity.getAngle() * (180 / Mathf.PI);
-        // a * (180 / Mathf.PI); rad2deg
-        // a * (Mathf.PI / 180); deg2rad
+        // Rotation is in degrees.
+        rotation = velocity.getAngle();
+        rotation *= -1;
+        rotation += 90;
 
-        //this.transform.rotation = Quaternion.EulerRotation();
+        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
 
         velocity = velocity.limit(maxspeed);
         position = position.add(velocity);
 
-        acceleration = acceleration.multS(0); // Reset acceleration.
+        acceleration = acceleration.multS(0);   // Reset acceleration.
 
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
+
+        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(velocity.x, 0, velocity.y) * 150)), Color.black);
     }
 
     // Separation.
@@ -89,9 +96,9 @@ public class SheepBehaviour : MonoBehaviour {
                 Vector2 diff = locationcopy.sub(other.GetComponent<SheepBehaviour>().position);
 
                 diff = diff.normalize();
-                diff = diff.divS(d);       // Weight by distance.
+                diff = diff.divS(d);        // Weight by distance.
                 sum = sum.add(diff);
-                count++;            // Keep track of how many.
+                count++;                    // Keep track of how many.
             }
         }
 

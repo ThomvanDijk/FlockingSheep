@@ -20,7 +20,8 @@ public class GridCreation : MonoBehaviour {
                 GameObject terrainBlock = (GameObject)Instantiate(underground, pos, transform.rotation);
 
                 // Set random color.
-                terrainBlock.GetComponent<Renderer>().material.color = Random.ColorHSV();
+                //terrainBlock.GetComponent<Renderer>().material.color = Random.ColorHSV();
+                terrainBlock.GetComponent<Renderer>().material.color = Color.black;
 
             }
         }

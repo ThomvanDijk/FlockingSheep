@@ -48,6 +48,7 @@ public static class ExtensionMethods {
         return vector2;
     }
 
+    // Return angle in degrees.
     public static float getAngle(this Vector2 vector2) {
         float angle = Mathf.Atan2(vector2.y, vector2.x);
         return angle * (180 / Mathf.PI);
