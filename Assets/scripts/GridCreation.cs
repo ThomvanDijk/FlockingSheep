@@ -19,10 +19,13 @@ public class GridCreation : MonoBehaviour {
                 // Create cube.
                 GameObject terrainBlock = (GameObject)Instantiate(underground, pos, transform.rotation);
 
-                // Set random color.
-                //terrainBlock.GetComponent<Renderer>().material.color = Random.ColorHSV();
-                terrainBlock.GetComponent<Renderer>().material.color = Color.black;
+                // Create random (green) color.
+                float red = ((float)Random.Range(0, 80) / 100);
+                float green = ((float)Random.Range(40, 100) / 100);
+                float blue = ((float)Random.Range(0, 10) / 100);
 
+                // Apply random color.
+                terrainBlock.GetComponent<Renderer>().material.color = new Color(red, green, blue); //Random.ColorHSV();
             }
         }
     }
