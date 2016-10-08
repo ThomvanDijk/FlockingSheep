@@ -28,30 +28,30 @@ public static class ExtensionMethods {
     }
 
     public static Vector2 getNormalized(this Vector2 vector2) {
-        Vector2 t = new Vector2(vector2.x, vector2.y);
-        t.normalize();
-        return t;
+        Vector2 normalized = new Vector2(vector2.x, vector2.y);
+        normalized = normalized.normalize();
+        return normalized;
     }
 
     public static Vector2 normalize(this Vector2 vector2) {
-        float m = (float)vector2.mag();
-        vector2.x = vector2.x / m;
-        vector2.y = vector2.y / m;
+        float m = vector2.mag();
+        if (m != 0) {
+            vector2 = vector2.divS(m);
+        }
         return vector2;
     }
 
     public static Vector2 limit(this Vector2 vector2, float max) {
         if (vector2.mag() > max) {
-            vector2.normalize();
-            vector2.multS(max);
+            vector2 = vector2.normalize();
+            vector2 = vector2.multS(max);
         }
         return vector2;
     }
 
-    // Return angle in degrees.
     public static float getAngle(this Vector2 vector2) {
         float angle = Mathf.Atan2(vector2.y, vector2.x);
-        return angle * (180 / Mathf.PI);
+        return angle * (180 / Mathf.PI); // Return angle in degrees.
     }
 
     public static Vector2 add(this Vector2 vector2, Vector2 other) {

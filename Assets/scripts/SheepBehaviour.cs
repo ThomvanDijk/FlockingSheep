@@ -74,7 +74,7 @@ public class SheepBehaviour : MonoBehaviour {
 
         this.transform.rotation = Quaternion.Euler(0, rotation, 0);
 
-        velocity = velocity.limit(maxspeed);
+        velocity = velocity.limit(maxspeed);    // Doesn't work!!!
         position = position.add(velocity);
         acceleration = acceleration.multS(0);   // Reset acceleration.
 

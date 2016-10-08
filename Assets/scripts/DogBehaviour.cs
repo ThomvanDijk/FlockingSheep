@@ -6,25 +6,62 @@ public class DogBehaviour : MonoBehaviour {
 
     public GameObject targetPrefab;
     public GameObject raycastLayer;
-    public float scaleSpeed = 1.5f;
-    public float fadeSpeed = 0.1f;
-    public float maxTargetScale = 2.5f;
+    public float scaleSpeed = 0;
+    public float fadeSpeed = 0;
+    public float maxTargetScale = 0;
+    public float maxspeed = 0;
+
+    private Vector2 position;
+    private Vector2 velocity;
+    private Vector2 acceleration;
+    private Vector2 direction;
 
     private Vector2 target;
     private List<GameObject> targetList;
+    private float rotation;
 
     // Use this for initialization
     void Start () {
-        target = this.transform.position;
-        targetList = new List<GameObject>();
+        position = new Vector2(this.transform.position.x, this.transform.position.z);
+        velocity = new Vector2(0, 0);
+        acceleration = new Vector2(0, 0);
+        direction = new Vector2(0, 0);
 
+        target = new Vector2(this.transform.position.x, this.transform.position.y);
+        targetList = new List<GameObject>();
+        rotation = 0;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        
+
+        setTarget();
+        clickFeedback(); // Shows feedback when new target is set.
+
+        //direction = target.sub(position);
+
+        Vector2 temp = new Vector2(1, 1);
+        direction = temp.sub(position);
+
+        direction.normalize();
+        direction.multS(0.5f);
+        acceleration = direction;
+
+        velocity = velocity.add(acceleration);
+        velocity = velocity.limit(maxspeed);
+
+        Debug.Log(velocity);
+        Debug.Log(" limit: " + velocity.limit(maxspeed) + " maxspeed: " + maxspeed);
+
+        position = position.add(velocity);
+
+        // Translate Vector2 position to the dog.
+        this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
+    }
+
+    private void setTarget() {
         // Save the place where the mouse clicked right.
-	    if (Input.GetMouseButtonDown(1)) {
+        if (Input.GetMouseButtonDown(1)) {
 
             RaycastHit hit; // Position where mouse hits the raycast.
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -37,9 +74,10 @@ public class DogBehaviour : MonoBehaviour {
 
                 target = new Vector2(hit.point.x, hit.point.z);
             }
-
         }
+    }
 
+    private void clickFeedback() {
         int count = targetList.Count;
         // Reverse iteration trough list to remove items.
         for (int i = count - 1; i >= 0; i--) {
@@ -62,8 +100,6 @@ public class DogBehaviour : MonoBehaviour {
                 targetList.RemoveAt(i);
             }
         }
-
-
     }
 
 }
