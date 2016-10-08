@@ -57,7 +57,7 @@ public class SheepBehaviour : MonoBehaviour {
     void applyForce(Vector2 force) {
         acceleration = acceleration.add(force);
 
-        // This statement filters NaN's in acceleration.
+        // This statement filters NaN valuse in acceleration.
         if (float.IsNaN(acceleration.x) || float.IsNaN(acceleration.y)) {
             acceleration = new Vector2(0, 0);
             Debug.Log("Warning! Acceleration set to 0 because acceleration was NaN!");
