@@ -56,6 +56,12 @@ public class SheepBehaviour : MonoBehaviour {
 
     void applyForce(Vector2 force) {
         acceleration = acceleration.add(force);
+
+        // This statement filters NaN's in acceleration.
+        if (float.IsNaN(acceleration.x) || float.IsNaN(acceleration.y)) {
+            acceleration = new Vector2(0, 0);
+            Debug.Log("Warning! Acceleration set to 0 because acceleration was NaN!");
+        }
     }
 
     // Method to update position.
@@ -72,8 +78,9 @@ public class SheepBehaviour : MonoBehaviour {
         position = position.add(velocity);
         acceleration = acceleration.multS(0);   // Reset acceleration.
 
+        // Give this sheep a new position based on the velocity.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
-
+        
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(velocity.x, 0, velocity.y) * 150)), Color.black);
     }
 
