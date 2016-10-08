@@ -23,8 +23,8 @@ public class SheepBehaviour : MonoBehaviour {
 
         maxforce = 0.01f;
         maxspeed = 0.02f;
-        neighbordist = 6;   // Neighbor detection range.
-        separation = 3;    // The distance for the seperation-force to apply.
+        neighbordist = 20;  // Neighbor detection range always needs to be higher than separation.
+        separation = 2;     // The distance for the seperation-force to apply.
     }
 
     // UpdateSheep is called from the FlockManager class.
