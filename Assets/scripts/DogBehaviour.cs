@@ -38,10 +38,8 @@ public class DogBehaviour : MonoBehaviour {
         setTarget();
         clickFeedback(); // Shows feedback when new target is set.
 
-        //direction = target.sub(position);
-
-        Vector2 temp = new Vector2(1, 1);
-        direction = temp.sub(position);
+        direction = target.sub(position);
+        Debug.Log(direction);
 
         direction.normalize();
         direction.multS(0.5f);
@@ -50,12 +48,14 @@ public class DogBehaviour : MonoBehaviour {
         velocity = velocity.add(acceleration);
         velocity = velocity.limit(maxspeed);
 
-        Debug.Log(velocity);
-        Debug.Log(" limit: " + velocity.limit(maxspeed) + " maxspeed: " + maxspeed);
+        rotation = velocity.getAngle();
+        rotation *= -1;
+
+        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
 
         position = position.add(velocity);
 
-        // Translate Vector2 position to the dog.
+        // Translate Vector2 position to dog.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
     }
 
