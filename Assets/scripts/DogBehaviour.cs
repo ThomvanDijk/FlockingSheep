@@ -9,7 +9,6 @@ public class DogBehaviour : MonoBehaviour {
     public float scaleSpeed = 0;
     public float fadeSpeed = 0;
     public float maxTargetScale = 0;
-    public float maxspeed = 0;
 
     private Vector2 position;
     private Vector2 velocity;
@@ -18,7 +17,10 @@ public class DogBehaviour : MonoBehaviour {
 
     private Vector2 target;
     private List<GameObject> targetList;
+    private float maxSpeed;
+    private float maxForce;
     private float rotation;
+    private float arriveRange;
 
     // Use this for initialization
     void Start () {
@@ -27,9 +29,12 @@ public class DogBehaviour : MonoBehaviour {
         acceleration = new Vector2(0, 0);
         direction = new Vector2(0, 0);
 
-        target = new Vector2(this.transform.position.x, this.transform.position.y);
+        target = new Vector2(this.transform.position.x, this.transform.position.z);
         targetList = new List<GameObject>();
+        maxSpeed = 0.1f;
+        maxForce = 0.08f;
         rotation = 0;
+        arriveRange = 100;
     }
 	
 	// Update is called once per frame
@@ -38,25 +43,56 @@ public class DogBehaviour : MonoBehaviour {
         setTarget();
         clickFeedback(); // Shows feedback when new target is set.
 
-        direction = target.sub(position);
-        Debug.Log(direction);
+        //direction = target.sub(position);
 
-        direction.normalize();
-        direction.multS(0.5f);
-        acceleration = direction;
+        //direction = direction.normalize();
+        //direction = direction.multS(0.005f);
+        //Debug.Log(direction);
+        //direction = direction.divS(2);
+        //Debug.Log(direction);
+
+        //acceleration = direction;
+
+        arrive(); // Where the dog arrives.
 
         velocity = velocity.add(acceleration);
-        velocity = velocity.limit(maxspeed);
-
-        rotation = velocity.getAngle();
-        rotation *= -1;
-
-        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
-
+        velocity = velocity.limit(maxSpeed);
         position = position.add(velocity);
+        acceleration = acceleration.multS(0);
+
+        if (velocity.mag() > 0) {
+            // Rotate dog in it's direction.
+            rotation = velocity.getAngle();
+            rotation *= -1;
+            this.transform.rotation = Quaternion.Euler(0, rotation, 0);
+        }
 
         // Translate Vector2 position to dog.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
+    }
+
+    private void applyForce(Vector2 force) {
+        acceleration = acceleration.add(force);
+    }
+
+    private void arrive() {
+        Vector2 desired = target.sub(position);
+
+        float distance = desired.mag(); // The distance is the magnitude of the vector pointing from location to target.
+        desired.normalize();
+
+        if (distance < arriveRange) { // If we are closer than 100...
+            //float m = map(distance, 0, 100, 0, maxspeed); // ...set the magnitude according to how close we are.
+            float m = 0.5f;
+            desired.multS(m);
+        }
+        else {
+            desired.multS(maxSpeed); // Otherwise, proceed at maximum speed.
+        }
+
+        Vector2 steer = desired.sub(velocity); // The usual steering = desired - velocity
+        steer = steer.limit(maxForce);
+        applyForce(steer);
     }
 
     private void setTarget() {

@@ -54,7 +54,7 @@ public class SheepBehaviour : MonoBehaviour {
         applyForce(coh);
     }
 
-    void applyForce(Vector2 force) {
+    private void applyForce(Vector2 force) {
         acceleration = acceleration.add(force);
 
         // This statement filters NaN valuse in acceleration.
@@ -65,28 +65,24 @@ public class SheepBehaviour : MonoBehaviour {
     }
 
     // Method to update position.
-    void updatePosition() {
+    private void updatePosition() {
         velocity = velocity.add(acceleration);
-
-        // Rotation is in degrees.
-        rotation = velocity.getAngle();
-        rotation *= -1;
-
-        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
-
         velocity = velocity.limit(maxspeed);
         position = position.add(velocity);
         acceleration = acceleration.multS(0);   // Reset acceleration.
 
+        // Rotate sheep in it's direction.
+        rotation = velocity.getAngle();
+        rotation *= -1;
+        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
+
         // Give this sheep a new position based on the velocity.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
-        
-        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(velocity.x, 0, velocity.y) * 150)), Color.black);
     }
 
     // Separation.
     // Method checks for nearby boids and steers away.
-    public Vector2 separate(List<GameObject> sheepList) {
+    private Vector2 separate(List<GameObject> sheepList) {
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
 
@@ -124,7 +120,7 @@ public class SheepBehaviour : MonoBehaviour {
 
     // Alignment.
     // For every nearby boid in the system, calculate the average velocity.
-    public Vector2 align(List<GameObject> sheepList) {
+    private Vector2 align(List<GameObject> sheepList) {
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
 
@@ -152,7 +148,7 @@ public class SheepBehaviour : MonoBehaviour {
 
     // Cohesion.
     // For the average location (i.e. center) of all nearby boids, calculate steering vector towards that location.
-    public Vector2 cohesion(List<GameObject> sheepList) {
+    private Vector2 cohesion(List<GameObject> sheepList) {
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
         foreach (var other in sheepList) {
@@ -172,7 +168,7 @@ public class SheepBehaviour : MonoBehaviour {
     }
 
     //Here you calculate the steering towards a target.
-    public Vector2 seek(Vector2 target) {
+    private Vector2 seek(Vector2 target) {
         Vector2 targetcopy = new Vector2(target.x, target.y);
         Vector2 desired = targetcopy.sub(position);
 
