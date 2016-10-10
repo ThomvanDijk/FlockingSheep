@@ -3,21 +3,22 @@ using System.Collections;
 
 public class GridCreation : MonoBehaviour {
 
-    public GameObject underground;
+    public GameObject tile;
+    public float offSet = 0;
 
     // Use this for initialization.
     void Start () {
-        int gridWidth = 100;
-        int gridHeight = 100;
+        int gridWidth = 80;
+        int gridHeight = 80;
 
         // Create the grid.
         for (int row = 0; row < gridHeight; row++) {
             for (int col = 0; col < gridWidth; col++) {
                 // Set the position.
-                Vector3 pos = new Vector3(col, 0, row);
+                Vector3 pos = new Vector3(col * offSet, 0, row * offSet);
 
                 // Create cube.
-                GameObject terrainBlock = (GameObject)Instantiate(underground, pos, transform.rotation);
+                GameObject terrainBlock = (GameObject)Instantiate(tile, pos, tile.transform.rotation);
 
                 // Create random (green) color.
                 float red = ((float)Random.Range(0, 80) / 100);

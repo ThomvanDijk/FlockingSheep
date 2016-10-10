@@ -41,7 +41,7 @@ public class SheepBehaviour : MonoBehaviour {
 
         // Arbitrarily weight these forces.
         sep = sep.multS(0.3f);
-        ali = ali.multS(0.2f);
+        ali = ali.multS(0.1f);
         coh = coh.multS(0.2f);
 
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(sep.x, 0, sep.y) * 100)), Color.red);
@@ -74,7 +74,8 @@ public class SheepBehaviour : MonoBehaviour {
         // Rotate sheep in it's direction.
         rotation = velocity.getAngle();
         rotation *= -1;
-        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
+        rotation += 90;
+        this.transform.rotation = Quaternion.Euler(-89.96101f, rotation, 0);
 
         // Give this sheep a new position based on the velocity.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);

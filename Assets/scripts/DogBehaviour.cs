@@ -31,10 +31,10 @@ public class DogBehaviour : MonoBehaviour {
 
         target = new Vector2(this.transform.position.x, this.transform.position.z);
         targetList = new List<GameObject>();
-        maxSpeed = 0.1f;
-        maxForce = 0.08f;
+        maxSpeed = 0.14f;
+        maxForce = 0.01f;
         rotation = 0;
-        arriveRange = 100;
+        arriveRange = 1;
     }
 	
 	// Update is called once per frame
@@ -42,16 +42,6 @@ public class DogBehaviour : MonoBehaviour {
 
         setTarget();
         clickFeedback(); // Shows feedback when new target is set.
-
-        //direction = target.sub(position);
-
-        //direction = direction.normalize();
-        //direction = direction.multS(0.005f);
-        //Debug.Log(direction);
-        //direction = direction.divS(2);
-        //Debug.Log(direction);
-
-        //acceleration = direction;
 
         arrive(); // Where the dog arrives.
 
@@ -64,7 +54,8 @@ public class DogBehaviour : MonoBehaviour {
             // Rotate dog in it's direction.
             rotation = velocity.getAngle();
             rotation *= -1;
-            this.transform.rotation = Quaternion.Euler(0, rotation, 0);
+            rotation += 90;
+            this.transform.rotation = Quaternion.Euler(-89.96101f, rotation, 0);
         }
 
         // Translate Vector2 position to dog.
@@ -73,26 +64,31 @@ public class DogBehaviour : MonoBehaviour {
 
     private void applyForce(Vector2 force) {
         acceleration = acceleration.add(force);
+        
     }
 
     private void arrive() {
         Vector2 desired = target.sub(position);
 
         float distance = desired.mag(); // The distance is the magnitude of the vector pointing from location to target.
-        desired.normalize();
+        desired = desired.normalize();
 
         if (distance < arriveRange) { // If we are closer than 100...
-            //float m = map(distance, 0, 100, 0, maxspeed); // ...set the magnitude according to how close we are.
-            float m = 0.5f;
-            desired.multS(m);
+            float m = map(distance, 0, 100, 0, maxSpeed); // ...set the magnitude according to how close we are.
+            desired = desired.multS(m);
         }
         else {
-            desired.multS(maxSpeed); // Otherwise, proceed at maximum speed.
+            desired = desired.multS(maxSpeed); // Otherwise, proceed at maximum speed.
         }
 
         Vector2 steer = desired.sub(velocity); // The usual steering = desired - velocity
         steer = steer.limit(maxForce);
         applyForce(steer);
+    }
+
+    // map(973, 0, 1023, 0, 255); // returns: 242
+    private float map(float x, float in_min, float in_max, float out_min, float out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
     private void setTarget() {
@@ -105,7 +101,7 @@ public class DogBehaviour : MonoBehaviour {
             if (raycastLayer.GetComponent<Collider>().Raycast(ray, out hit, Mathf.Infinity)) {
 
                 // Greate target point for visuals.
-                GameObject targetIndicator = (GameObject)Instantiate(targetPrefab, hit.point, transform.rotation);
+                GameObject targetIndicator = (GameObject)Instantiate(targetPrefab, hit.point, targetPrefab.transform.rotation);
                 targetList.Add(targetIndicator);
 
                 target = new Vector2(hit.point.x, hit.point.z);
