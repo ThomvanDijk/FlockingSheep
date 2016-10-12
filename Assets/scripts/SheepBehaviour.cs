@@ -23,23 +23,25 @@ public class SheepBehaviour : MonoBehaviour {
 
         maxforce = 0.01f;
         maxspeed = 0.02f;
-        neighbordist = 20;  // Neighbor detection range always needs to be higher than separation.
+        neighbordist = 10;  // Neighbor detection range always needs to be higher than separation.
         separation = 2;     // The distance for the seperation-force to apply.
     }
 
     // UpdateSheep is called from the FlockManager class.
-    public void updateSheep(List<GameObject> sheepList) {
-        flock(sheepList);
+    public void updateSheep(List<GameObject> sheepList, GameObject sheepdog) {
+        flock(sheepList, sheepdog);
         updatePosition();
     }
 
     // We accumulate a new acceleration each time based on three rules.
-    public void flock(List<GameObject> sheepList) {
-        Vector2 sep = separate(sheepList);
+    public void flock(List<GameObject> sheepList, GameObject sheepdog) {
+        Vector2 dog = separate(null, sheepdog);
+        Vector2 sep = separate(sheepList, null);
         Vector2 ali = align(sheepList);
         Vector2 coh = cohesion(sheepList);
 
         // Arbitrarily weight these forces.
+        dog = dog.multS(0.4f);
         sep = sep.multS(0.3f);
         ali = ali.multS(0.1f);
         coh = coh.multS(0.2f);
@@ -49,6 +51,7 @@ public class SheepBehaviour : MonoBehaviour {
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(coh.x, 0, coh.y) * 100)), Color.green);
 
         // Add the force vectors to acceleration.
+        applyForce(dog);
         applyForce(sep);
         applyForce(ali);
         applyForce(coh);
@@ -83,25 +86,45 @@ public class SheepBehaviour : MonoBehaviour {
 
     // Separation.
     // Method checks for nearby boids and steers away.
-    private Vector2 separate(List<GameObject> sheepList) {
+    private Vector2 separate(List<GameObject> sheepList, GameObject sheepdog) {
         Vector2 sum = new Vector2(0, 0);
         int count = 0;
 
-        // For every boid in the system, check if it's too close.
-        foreach (var other in sheepList) {
-            float d = position.dist(other.GetComponent<SheepBehaviour>().position);
+        // If the argument is not a dog but a sheeplist...
+        if (sheepdog == null) {
+            // For every boid in the system, check if it's too close.
+            foreach (var other in sheepList) {
+                float d = position.dist(other.GetComponent<SheepBehaviour>().position);
+
+                // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
+                if ((d > 0) && (d < separation)) {
+                    // Calculate vector pointing away from neighbor.
+                    Vector2 locationcopy = new Vector2(position.x, position.y);
+                    Vector2 diff = locationcopy.sub(other.GetComponent<SheepBehaviour>().position);
+
+                    diff = diff.normalize();
+                    diff = diff.divS(d);        // Weight by distance.
+                    sum = sum.add(diff);
+                    count++;                    // Keep track of how many.
+                }
+            }
+        }
+
+        // If the argument is not a sheeplist but a dog...
+        if (sheepList == null) {
+            float d = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
 
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
-            if ((d > 0) && (d < separation)) {
+            //if ((d > 0) && (d < separation)) {
                 // Calculate vector pointing away from neighbor.
                 Vector2 locationcopy = new Vector2(position.x, position.y);
-                Vector2 diff = locationcopy.sub(other.GetComponent<SheepBehaviour>().position);
+                Vector2 diff = locationcopy.sub(sheepdog.GetComponent<DogBehaviour>().position);
 
                 diff = diff.normalize();
                 diff = diff.divS(d);        // Weight by distance.
                 sum = sum.add(diff);
                 count++;                    // Keep track of how many.
-            }
+            //}
         }
 
         // Average -- divide by how many.

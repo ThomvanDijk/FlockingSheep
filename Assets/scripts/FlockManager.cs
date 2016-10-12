@@ -6,6 +6,7 @@ public class FlockManager : MonoBehaviour {
 
     public int numberOfSheep = 10;
     public GameObject sheepPrefab;
+    public GameObject sheepdog;
     public Transform sheepSpawn;
 
     private List<GameObject> sheepList;
@@ -26,7 +27,7 @@ public class FlockManager : MonoBehaviour {
             SheepBehaviour sheepScript = (SheepBehaviour)sheep.GetComponent(typeof(SheepBehaviour));
 
             // Passing the entire list of sheep to each sheep individually.
-            sheepScript.updateSheep(sheepList);
+            sheepScript.updateSheep(sheepList, sheepdog);
         }
 	}
 

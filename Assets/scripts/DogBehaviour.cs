@@ -10,7 +10,7 @@ public class DogBehaviour : MonoBehaviour {
     public float fadeSpeed = 0;
     public float maxTargetScale = 0;
 
-    private Vector2 position;
+    public Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
     private Vector2 direction;
@@ -32,7 +32,7 @@ public class DogBehaviour : MonoBehaviour {
         target = new Vector2(this.transform.position.x, this.transform.position.z);
         targetList = new List<GameObject>();
         maxSpeed = 0.14f;
-        maxForce = 0.01f;
+        maxForce = 0.011f;
         rotation = 0;
         arriveRange = 1;
     }
