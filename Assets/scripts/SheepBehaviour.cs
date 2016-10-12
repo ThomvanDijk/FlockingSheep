@@ -8,10 +8,13 @@ public class SheepBehaviour : MonoBehaviour {
     private Vector2 velocity;
     private Vector2 acceleration;
 
-    private float maxforce;         // Maximum steering force.
-    private float maxspeed;         // Maximum speed.
-    private float neighbordist;     // Detection range.
+    private float maxForce;         // Maximum steering force.
+    private float fixedMaxSpeed;
+    private float maxSpeed;         // Maximum speed.
+    private float neighborDist;     // Detection range.
     private float separation;       // Separation between two boids.
+    private float dogSeparation;    // Distance for seperation from dog.
+    private float dogDetection;     // Range where the sheep sees the dog.
     private float rotation;
 
     // Use this for initialization.
@@ -21,10 +24,13 @@ public class SheepBehaviour : MonoBehaviour {
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
 
-        maxforce = 0.01f;
-        maxspeed = 0.02f;
-        neighbordist = 10;  // Neighbor detection range always needs to be higher than separation.
+        maxForce = 0.01f;
+        fixedMaxSpeed = 0.04f;
+        maxSpeed = fixedMaxSpeed;
+        neighborDist = 4;   // Neighbor detection range always needs to be higher than separation.
         separation = 2;     // The distance for the seperation-force to apply.
+        dogDetection = 10;
+        dogSeparation = 4;
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -35,6 +41,18 @@ public class SheepBehaviour : MonoBehaviour {
 
     // We accumulate a new acceleration each time based on three rules.
     public void flock(List<GameObject> sheepList, GameObject sheepdog) {
+        // Dependent on the distance of the dog the sheep walk faster or not.
+        float distanceFromDog = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
+
+        if (distanceFromDog > dogDetection) {
+            maxSpeed = 0;
+        }
+        else {
+            maxSpeed = map(distanceFromDog, 0, dogDetection, fixedMaxSpeed, 0);
+        }
+
+        //Debug.Log("maxSpeed: " + maxSpeed);
+
         Vector2 dog = separate(null, sheepdog);
         Vector2 sep = separate(sheepList, null);
         Vector2 ali = align(sheepList);
@@ -43,8 +61,8 @@ public class SheepBehaviour : MonoBehaviour {
         // Arbitrarily weight these forces.
         dog = dog.multS(0.4f);
         sep = sep.multS(0.3f);
-        ali = ali.multS(0.1f);
-        coh = coh.multS(0.2f);
+        ali = ali.multS(0.2f);
+        coh = coh.multS(0.1f);
 
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(sep.x, 0, sep.y) * 100)), Color.red);
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(ali.x, 0, ali.y) * 200)), Color.blue);
@@ -70,7 +88,7 @@ public class SheepBehaviour : MonoBehaviour {
     // Method to update position.
     private void updatePosition() {
         velocity = velocity.add(acceleration);
-        velocity = velocity.limit(maxspeed);
+        velocity = velocity.limit(maxSpeed);
         position = position.add(velocity);
         acceleration = acceleration.multS(0);   // Reset acceleration.
 
@@ -115,7 +133,7 @@ public class SheepBehaviour : MonoBehaviour {
             float d = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
 
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
-            //if ((d > 0) && (d < separation)) {
+            if (d < dogSeparation) {
                 // Calculate vector pointing away from neighbor.
                 Vector2 locationcopy = new Vector2(position.x, position.y);
                 Vector2 diff = locationcopy.sub(sheepdog.GetComponent<DogBehaviour>().position);
@@ -124,7 +142,7 @@ public class SheepBehaviour : MonoBehaviour {
                 diff = diff.divS(d);        // Weight by distance.
                 sum = sum.add(diff);
                 count++;                    // Keep track of how many.
-            //}
+            }
         }
 
         // Average -- divide by how many.
@@ -135,9 +153,9 @@ public class SheepBehaviour : MonoBehaviour {
 
         // As long as the vector is greater than 0.
         if (sum.mag() > 0) {
-            sum = sum.multS(maxspeed);
+            sum = sum.multS(maxSpeed);
             Vector2 steer = sum.sub(velocity);
-            steer = steer.limit(maxforce);
+            steer = steer.limit(maxForce);
         }
         return sum;
     }
@@ -150,7 +168,7 @@ public class SheepBehaviour : MonoBehaviour {
 
         foreach (var other in sheepList) {
             float d = position.dist(other.GetComponent<SheepBehaviour>().position);
-            if ((d > 0) && (d < neighbordist)) {
+            if ((d > 0) && (d < neighborDist)) {
                 sum = sum.add(other.GetComponent<SheepBehaviour>().velocity);
                 count++;
             }
@@ -159,9 +177,9 @@ public class SheepBehaviour : MonoBehaviour {
         if (count > 0) {
             sum = sum.divS(count);
             sum = sum.normalize();
-            sum = sum.multS(maxspeed);
+            sum = sum.multS(maxSpeed);
             Vector2 steer = sum.sub(velocity);
-            steer = steer.limit(maxforce);
+            steer = steer.limit(maxForce);
             return steer;
         }
 
@@ -177,7 +195,7 @@ public class SheepBehaviour : MonoBehaviour {
         int count = 0;
         foreach (var other in sheepList) {
             float d = position.dist(other.GetComponent<SheepBehaviour>().position);
-            if ((d > 0) && (d < neighbordist)) {
+            if ((d > 0) && (d < neighborDist)) {
                 sum = sum.add(other.GetComponent<SheepBehaviour>().position); // Add location
                 count++;
             }
@@ -197,11 +215,16 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 desired = targetcopy.sub(position);
 
         desired = desired.normalize();
-        desired = desired.multS(maxspeed);
+        desired = desired.multS(maxSpeed);
         Vector2 steer = desired.sub(velocity);
-        steer = steer.limit(maxforce);
+        steer = steer.limit(maxForce);
 
         return steer;
+    }
+
+    // map(973, 0, 1023, 0, 255); // returns: 242
+    private float map(float x, float in_min, float in_max, float out_min, float out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
 }
