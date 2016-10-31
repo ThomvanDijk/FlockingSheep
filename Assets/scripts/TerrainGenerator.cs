@@ -17,8 +17,6 @@ public class TerrainGenerator : MonoBehaviour {
     public GameObject fenceCorner;
 
     private List<GameObject> tileList;
-    private List<string> levelRow;
-    private List<string> levelColumn;
 
     // Use this for initialization.
     void Start () {
@@ -33,12 +31,12 @@ public class TerrainGenerator : MonoBehaviour {
 
         string levelString = level1.text;
 
-        levelRow = new List<string>();
-        levelColumn = new List<string>();
+        List<string> levelRow = new List<string>();
+        List<string> levelColumn = new List<string>();
 
         // Adding all rows.
         levelRow.AddRange(levelString.Split("\n"[0]));
-        levelColumn.AddRange(levelRow[0].Split(" "[0]));
+        levelColumn.AddRange(levelRow[0].Split(","[0]));
 
         int rowCount = levelRow.Count;
         int columnCount = levelColumn.Count;
@@ -47,9 +45,9 @@ public class TerrainGenerator : MonoBehaviour {
 
         for (int i = 0; i < rowCount; i++) {
             levelColumn.Clear();
-            levelColumn.AddRange(levelRow[i].Split(" "[0]));
+            levelColumn.AddRange(levelRow[i].Split(","[0]));
             for (int j = 0; j < columnCount; j++) {
-                tileType[i, j] = int.Parse(levelColumn[j]);
+                tileType[i, j] = int.Parse(levelColumn[j]) - 1;
             }
         }
 
