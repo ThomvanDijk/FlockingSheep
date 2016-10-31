@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GridCreation : MonoBehaviour {
+public class TerrainGenerator : MonoBehaviour {
 
     public GameObject tile;
     public float offSet = 0;
