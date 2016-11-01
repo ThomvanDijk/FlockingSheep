@@ -16,10 +16,13 @@ public class TerrainGenerator : MonoBehaviour {
     public GameObject fenceEnd;
     public GameObject fenceCorner;
 
+    public static List<GameObject> grassList;
+
     private List<GameObject> tileList;
 
     // Use this for initialization.
     void Start () {
+        grassList = new List<GameObject>();
         tileList = new List<GameObject>();
 
         tileList.Add(grassTile);
@@ -59,6 +62,11 @@ public class TerrainGenerator : MonoBehaviour {
 
                 // Create cube.
                 GameObject terrainBlock = (GameObject)Instantiate(tileList[tileType[row, col]], pos, tileList[0].transform.rotation);
+
+                // Check here if the gameobject is grass (1).
+                if (tileType[row, col] == 1) {
+                    grassList.Add(terrainBlock);
+                }
 
                 // Create random (green) color.
                 float red = ((float)Random.Range(0, 80) / 100);

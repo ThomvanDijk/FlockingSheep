@@ -66,6 +66,8 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 sep = separate(sheepList, null);
         Vector2 ali = align(sheepList);
         Vector2 coh = cohesion(sheepList);
+        //Vector2 grass = cohesion(grassList);
+
 
         // Arbitrarily weight these forces.
         dog = dog.multS(0.4f);
