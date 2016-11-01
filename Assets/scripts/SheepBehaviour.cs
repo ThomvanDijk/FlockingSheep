@@ -46,6 +46,7 @@ public class SheepBehaviour : MonoBehaviour {
     public void flock(List<GameObject> sheepList, GameObject sheepdog) {
         // Dependent on the distance of the dog the sheep walk faster or not.
         float distanceFromDog = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
+
         //float distanceFromSheep = 0;
 
         //foreach (var sheep in sheepList) {

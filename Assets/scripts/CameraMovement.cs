@@ -3,12 +3,12 @@ using System.Collections;
 
 public class CameraMovement : MonoBehaviour {
 
-    public float scrollSpeed;
-    float diagonalSpeed;
+    private float scrollSpeed;
+    private float diagonalSpeed;
 
     // Use this for initialization.
     void Start() {
-        scrollSpeed = 10;
+        scrollSpeed = 14;
         // The diagonal speed is so that the camera moves always with 
         // the same speed in one of the 8 directions.
         diagonalSpeed = Mathf.Sqrt(Mathf.Pow(scrollSpeed, 2) / 2);

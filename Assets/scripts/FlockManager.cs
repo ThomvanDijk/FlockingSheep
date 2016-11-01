@@ -4,7 +4,6 @@ using System.Collections;
 
 public class FlockManager : MonoBehaviour {
 
-    public int numberOfSheep = 10;
     public GameObject sheepPrefab;
     public GameObject sheepdog;
     public Transform sheepSpawn;
@@ -13,6 +12,7 @@ public class FlockManager : MonoBehaviour {
 
     // Use this for initialization.
     void Start () {
+        int numberOfSheep = 40;
         sheepList = new List<GameObject>();
 
         // Here the flock is created.
@@ -34,15 +34,13 @@ public class FlockManager : MonoBehaviour {
     private void addSheep() {
         // Create sheep wit random position.
         GameObject sheep = (GameObject)Instantiate(sheepPrefab, new Vector3(
-            sheepSpawn.position.x + Random.Range(0, 10), 
+            sheepSpawn.position.x + Random.Range(-5, 5), 
             sheepSpawn.position.y,
-            sheepSpawn.position.z + Random.Range(0, 10)),
+            sheepSpawn.position.z + Random.Range(-5, 5)),
             sheepPrefab.transform.rotation);
 
         // Add sheep to list.
         sheepList.Add(sheep);
-
-        //Debug.Log(sheepList.Count);
     }
 
 }
