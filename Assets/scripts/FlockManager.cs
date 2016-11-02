@@ -8,7 +8,7 @@ public class FlockManager : MonoBehaviour {
     public GameObject sheepdog;
     public Transform sheepSpawn;
 
-    private List<GameObject> sheepList;
+    public List<GameObject> sheepList;
 
     // Use this for initialization.
     void Start () {
