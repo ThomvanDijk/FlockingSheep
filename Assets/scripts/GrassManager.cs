@@ -9,9 +9,9 @@ public class GrassManager : MonoBehaviour {
     private float onGrassTimer;
     private bool gaveScore;
     private float grazeSpeed;
-    private float r;
-    private float g;
-    private float b;
+    private float red;
+    private float green;
+    private float blue;
 
     // Use this for initialization
     void Start () {
@@ -19,7 +19,7 @@ public class GrassManager : MonoBehaviour {
         stayedLongEnough = 3; // 3 seconds.
         onGrassTimer = 0;
         gaveScore = false;
-        grazeSpeed = 2;
+        grazeSpeed = 3;
     }
 
     void OnTriggerStay(Collider other) {
@@ -38,16 +38,14 @@ public class GrassManager : MonoBehaviour {
 
                     // Optionally I need a system where you take two color values and change it according to the percentage level.
 
-                    float greenValue = map(grassValue, 0, 100, 0, 255) - 80; // Convert percentage value to value between 0 and 255.
-                    greenValue = map(greenValue, 0, 255, 0, 1) ;    // Convert value between 0 and 255 to value between 0 and 1.
+                    float greenValue = map(grassValue, 0, 100, 0, 0.4f); 
 
-                    g = map(80, 0, 255, 0, 1) + greenValue - map(35, 0, 255, 0, 1); // Convert minimal value of 80 to value between 0 and 1. Now add the 
-                    // greenvalue, this way the grass gets a brown or green color dependent on the green value.
+                    green = 0.6f + greenValue; 
 
-                    r = transform.GetChild(0).GetComponent<Renderer>().material.color.r;
-                    b = transform.GetChild(0).GetComponent<Renderer>().material.color.b;
+                    red = transform.GetChild(0).GetComponent<Renderer>().material.color.r;
+                    blue = transform.GetChild(0).GetComponent<Renderer>().material.color.b;
 
-                    transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(r, g, b);
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(red, green, blue);
                 }
                 if (grassValue <= 0 && !gaveScore) {
                     ScoreManager.score += 1;
