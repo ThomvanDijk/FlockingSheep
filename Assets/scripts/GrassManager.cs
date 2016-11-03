@@ -9,6 +9,9 @@ public class GrassManager : MonoBehaviour {
     private float onGrassTimer;
     private bool gaveScore;
     private float grazeSpeed;
+    private float r;
+    private float g;
+    private float b;
 
     // Use this for initialization
     void Start () {
@@ -32,19 +35,35 @@ public class GrassManager : MonoBehaviour {
 
                 if (grassValue > 0) {
                     grassValue -= grazeSpeed * Time.deltaTime;
+
+                    // Optionally I need a system where you take two color values and change it according to the percentage level.
+
+                    float greenValue = map(grassValue, 0, 100, 0, 255) - 80; // Convert percentage value to value between 0 and 255.
+                    greenValue = map(greenValue, 0, 255, 0, 1) ;    // Convert value between 0 and 255 to value between 0 and 1.
+
+                    g = map(80, 0, 255, 0, 1) + greenValue - map(35, 0, 255, 0, 1); // Convert minimal value of 80 to value between 0 and 1. Now add the 
+                    // greenvalue, this way the grass gets a brown or green color dependent on the green value.
+
+                    r = transform.GetChild(0).GetComponent<Renderer>().material.color.r;
+                    b = transform.GetChild(0).GetComponent<Renderer>().material.color.b;
+
+                    transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(r, g, b);
                 }
                 if (grassValue <= 0 && !gaveScore) {
                     ScoreManager.score += 1;
                     gaveScore = true;
                 }
-
-                transform.GetChild(0).GetComponent<MeshRenderer>().material.color = new Color(100, 100, 100);
             }
         }
     }
 
     void OnTriggerExit(Collider other) {
-        //onGrassTimer = 0;
+        onGrassTimer = 0;
+    }
+
+    // map(973, 0, 1023, 0, 255); // returns: 242
+    private float map(float x, float in_min, float in_max, float out_min, float out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
 }
