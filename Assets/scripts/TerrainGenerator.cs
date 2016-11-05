@@ -16,6 +16,10 @@ public class TerrainGenerator : MonoBehaviour {
     public GameObject fenceEnd;
     public GameObject fenceCorner;
 
+    public Material grassLight;
+    public Material grassMed;
+    public Material grassDark;
+
     private List<GameObject> tileList;
 
     // Use this for initialization.
@@ -60,13 +64,33 @@ public class TerrainGenerator : MonoBehaviour {
                 // Create cube.
                 GameObject terrainBlock = (GameObject)Instantiate(tileList[tileType[row, col]], pos, tileList[0].transform.rotation);
 
-                // Create random (green) color.
-                float red = ((float)Random.Range(0, 80) / 100);
-                float green = ((float)Random.Range(40, 100) / 100);
-                float blue = ((float)Random.Range(0, 10) / 100);
+                int random = Random.Range(0, 3);
 
-                // Apply random color.
-                //terrainBlock.GetComponent<Renderer>().material.color = new Color(red, green, blue); //Random.ColorHSV();
+                if (tileType[row, col] == 0) {
+                    switch (random) {
+                        case 0:
+                            terrainBlock.transform.GetChild(0).GetComponent<Renderer>().material = grassLight;
+                            break;
+                        case 1:
+                            terrainBlock.transform.GetChild(0).GetComponent<Renderer>().material = grassMed;
+                            break;
+                        case 2:
+                            terrainBlock.transform.GetChild(0).GetComponent<Renderer>().material = grassDark;
+                            break;
+                    }
+                } else {
+                    switch (random) {
+                        case 0:
+                            terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material = grassLight;
+                            break;
+                        case 1:
+                            terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material = grassMed;
+                            break;
+                        case 2:
+                            terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material = grassDark;
+                            break;
+                    }
+                }
             }
         }
     }
