@@ -5,8 +5,7 @@ using System.Collections;
 public class TerrainGenerator : MonoBehaviour {
 
     public float offSet = 0;
-    public int gridHeight = 0;
-    public int gridWidth = 0;
+
     public TextAsset level1;
     
     public GameObject grassTile;

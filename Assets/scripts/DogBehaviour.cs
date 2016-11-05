@@ -6,21 +6,23 @@ public class DogBehaviour : MonoBehaviour {
 
     public GameObject targetPrefab;
     public GameObject raycastLayer;
-    public float scaleSpeed = 0;
-    public float fadeSpeed = 0;
-    public float maxTargetScale = 0;
-
     public Vector2 position;
+
     private Vector2 velocity;
     private Vector2 acceleration;
     private Vector2 direction;
 
     private Vector2 target;
     private List<GameObject> targetList;
+    private Animator animator;
     private float maxSpeed;
     private float maxForce;
-    private float rotation;
     private float arriveRange;
+    private bool run;
+
+    private float scaleSpeed;       // The speed a wich a pointer scales.
+    private float fadeSpeed;        // The fade speed of the pointer.
+    private float maxTargetScale;   // The size until he dissapears.
 
     // Use this for initialization
     void Start () {
@@ -31,10 +33,17 @@ public class DogBehaviour : MonoBehaviour {
 
         target = new Vector2(this.transform.position.x, this.transform.position.z);
         targetList = new List<GameObject>();
+        animator = GetComponent<Animator>();
+
         maxSpeed = 0.14f;
         maxForce = 0.011f;
-        rotation = 0;
         arriveRange = 1;
+
+        run = false;
+
+        scaleSpeed = 1.5f;
+        fadeSpeed = 2.0f;
+        maxTargetScale = 2.5f;
     }
 	
 	// Update is called once per frame
@@ -52,11 +61,14 @@ public class DogBehaviour : MonoBehaviour {
 
         if (velocity.mag() > 0) {
             // Rotate dog in it's direction.
-            rotation = velocity.getAngle();
+            float rotation = velocity.getAngle();
             rotation *= -1;
             rotation += 90;
-            this.transform.rotation = Quaternion.Euler(-89.96101f, rotation, 0);
+            this.transform.rotation = Quaternion.Euler(0, rotation, 0);
         }
+
+        // Check wich animation needs to be applied.
+        checkAnimation();
 
         // Translate Vector2 position to dog.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
@@ -64,7 +76,20 @@ public class DogBehaviour : MonoBehaviour {
 
     private void applyForce(Vector2 force) {
         acceleration = acceleration.add(force);
-        
+    }
+
+    private void checkAnimation() {
+
+        if (velocity.mag() > 0.01f) {
+            run = true;
+        }
+        else {
+            animator.Play("Armature|to sit");
+            run = false;
+        }
+
+        // Change the bool inside the animator.
+        animator.SetBool("run", run);
     }
 
     private void arrive() {
