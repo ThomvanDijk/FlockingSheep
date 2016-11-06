@@ -4,8 +4,6 @@ using System.Collections;
 
 public class TerrainGenerator : MonoBehaviour {
 
-    public float offSet = 0;
-
     public TextAsset level1;
     
     public GameObject grassTile;
@@ -19,6 +17,7 @@ public class TerrainGenerator : MonoBehaviour {
     public Material grassMed;
     public Material grassDark;
 
+    private float offSet;
     private List<GameObject> tileList;
 
     // Use this for initialization.
@@ -33,6 +32,8 @@ public class TerrainGenerator : MonoBehaviour {
         tileList.Add(fenceCorner);
 
         string levelString = level1.text;
+
+        offSet = 2;
 
         List<string> levelRow = new List<string>();
         List<string> levelColumn = new List<string>();
