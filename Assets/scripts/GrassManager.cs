@@ -4,7 +4,8 @@ using System.Collections;
 
 public class GrassManager : MonoBehaviour {
 
-    private float grassValue; // 0% is no grass.
+    public float grassValue; // 0% is no grass.
+
     private float stayedLongEnough;
     private float onGrassTimer;
     private bool gaveScore;

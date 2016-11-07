@@ -7,7 +7,7 @@ public class SheepBehaviour : MonoBehaviour {
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
-
+    private Animator animator;
     private float maxForce;         // Maximum steering force.
     private float fixedMaxSpeed;
     private float maxSpeed;         // Maximum speed.
@@ -18,22 +18,27 @@ public class SheepBehaviour : MonoBehaviour {
     private float rotation;
     private float rotationSpeed;
 
+    private bool graze;
+
     // Use this for initialization.
     void Start() {
         position = new Vector2(this.transform.position.x, this.transform.position.z);
         float angle = (Random.Range(0, 101) * 0.01f) * (Mathf.PI * 2);
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
+        animator = GetComponent<Animator>();
 
         maxForce = 0.01f;
-        fixedMaxSpeed = 0.06f;
+        fixedMaxSpeed = 0.08f;
         maxSpeed = fixedMaxSpeed;
-        neighborDist = 4.0f;   // Neighbor detection range always needs to be higher than separation.
+        neighborDist = 5.0f;   // Neighbor detection range always needs to be higher than separation.
         separation = 2.0f;     // The distance for the seperation-force to apply.
-        dogDetection = 10.0f;
-        dogSeparation = 4.0f;
+        dogDetection = 14.0f;
+        dogSeparation = 2.0f;
         rotation = 0.0f;
         rotationSpeed = 2.0f;
+
+        graze = false;
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -47,18 +52,20 @@ public class SheepBehaviour : MonoBehaviour {
         // Dependent on the distance of the dog the sheep walk faster or not.
         float distanceFromDog = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
 
-        //float distanceFromSheep = 0;
-
-        //foreach (var sheep in sheepList) {
-        //    distanceFromSheep = position.dist(sheep.GetComponent<SheepBehaviour>().position);
-        //}
+        Debug.Log("before: " + maxSpeed);
 
         if (distanceFromDog > dogDetection) {
             maxSpeed = 0.0f;
         }
         else {
             maxSpeed = map(distanceFromDog, 0.0f, dogDetection, fixedMaxSpeed, 0.0f);
+
+            if (maxSpeed < 0.005f) {
+                maxSpeed = 0.0f;
+            }
         }
+
+        Debug.Log("after: " + maxSpeed);
 
         //Debug.Log("maxSpeed: " + maxSpeed);
 
@@ -67,7 +74,6 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 ali = align(sheepList);
         Vector2 coh = cohesion(sheepList);
         //Vector2 grass = cohesion(grassList);
-
 
         // Arbitrarily weight these forces.
         dog = dog.multS(0.4f);
@@ -100,7 +106,7 @@ public class SheepBehaviour : MonoBehaviour {
     private void updatePosition() {
         velocity = velocity.add(acceleration);
 
-        if (maxSpeed != 0.0f) {
+        if (maxSpeed > 0) {
             velocity = velocity.limit(maxSpeed);
         }
         position = position.add(velocity);   
@@ -111,10 +117,51 @@ public class SheepBehaviour : MonoBehaviour {
         targetRotation *= -1;
         targetRotation += 90;
         rotation = Mathf.LerpAngle(rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        this.transform.rotation = Quaternion.Euler(-89.96101f, rotation, 0.0f);
+        this.transform.rotation = Quaternion.Euler(0, rotation, 0.0f);
+
+        // Check wich animation needs to be applied.
+        checkAnimation();
 
         // Give this sheep a new position based on the velocity.
         this.transform.position = new Vector3(position.x, this.transform.position.y, position.y);
+    }
+
+    private void checkAnimation() {
+        float speed = 0;
+
+        if (velocity.mag() > 0.005f && velocity.mag() < 0.03f) {
+            speed = 0.2f;
+        }
+        else if (velocity.mag() >= 0.03f) {
+            speed = 0.6f;
+        }
+        else {
+            speed = 0;
+        }
+
+        // Change is sheep is grazing.
+        animator.SetBool("graze", graze);
+
+        // Change the speed inside the animator.
+        animator.SetFloat("speed", speed);
+    }
+
+    void OnTriggerStay(Collider other) {
+
+        // Check if the other object is indeed a sheep.
+        if (other.CompareTag("Grass")) {
+
+            if (other.GetComponent<GrassManager>().grassValue > 0) {
+                graze = true;
+            }
+            else {
+                graze = false;
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider other) {
+        graze = false;
     }
 
     // Separation.
