@@ -52,22 +52,16 @@ public class SheepBehaviour : MonoBehaviour {
         // Dependent on the distance of the dog the sheep walk faster or not.
         float distanceFromDog = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
 
-        Debug.Log("before: " + maxSpeed);
-
         if (distanceFromDog > dogDetection) {
-            maxSpeed = 0.0f;
+            maxSpeed = 0;
         }
         else {
-            maxSpeed = map(distanceFromDog, 0.0f, dogDetection, fixedMaxSpeed, 0.0f);
+            maxSpeed = map(distanceFromDog, 0, dogDetection, fixedMaxSpeed, 0);
 
             if (maxSpeed < 0.005f) {
-                maxSpeed = 0.0f;
+                maxSpeed = 0;
             }
         }
-
-        Debug.Log("after: " + maxSpeed);
-
-        //Debug.Log("maxSpeed: " + maxSpeed);
 
         Vector2 dog = separate(null, sheepdog);
         Vector2 sep = separate(sheepList, null);
@@ -106,18 +100,18 @@ public class SheepBehaviour : MonoBehaviour {
     private void updatePosition() {
         velocity = velocity.add(acceleration);
 
-        if (maxSpeed > 0) {
+        //if (maxSpeed > 0) {
             velocity = velocity.limit(maxSpeed);
-        }
+        //}
         position = position.add(velocity);   
-        acceleration = acceleration.multS(0.0f);   // Reset acceleration.
+        acceleration = acceleration.multS(0);   // Reset acceleration.
 
         // Rotate sheep in it's direction.
         float targetRotation = velocity.getAngle();
         targetRotation *= -1;
         targetRotation += 90;
         rotation = Mathf.LerpAngle(rotation, targetRotation, rotationSpeed * Time.deltaTime);
-        this.transform.rotation = Quaternion.Euler(0, rotation, 0.0f);
+        this.transform.rotation = Quaternion.Euler(0, rotation, 0);
 
         // Check wich animation needs to be applied.
         checkAnimation();
@@ -151,7 +145,7 @@ public class SheepBehaviour : MonoBehaviour {
         // Check if the other object is indeed a sheep.
         if (other.CompareTag("Grass")) {
 
-            if (other.GetComponent<GrassManager>().grassValue > 0) {
+            if (other.GetComponent<GrassManager>().grassValue > 0 && velocity.mag() <= 0) {
                 graze = true;
             }
             else {
@@ -214,7 +208,7 @@ public class SheepBehaviour : MonoBehaviour {
         }
 
         // As long as the vector is greater than 0.
-        if (sum.mag() > 0.0f) {
+        if (sum.mag() > 0) {
             sum = sum.multS(maxSpeed);
             Vector2 steer = sum.sub(velocity);
             steer = steer.limit(maxForce);
@@ -271,7 +265,7 @@ public class SheepBehaviour : MonoBehaviour {
         }
     }
 
-    //Here you calculate the steering towards a target.
+    // Here you calculate the steering towards a target.
     private Vector2 seek(Vector2 target) {
         Vector2 targetcopy = new Vector2(target.x, target.y);
         Vector2 desired = targetcopy.sub(position);
