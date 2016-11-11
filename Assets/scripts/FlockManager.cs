@@ -12,7 +12,7 @@ public class FlockManager : MonoBehaviour {
 
     // Use this for initialization.
     void Start () {
-        int numberOfSheep = 40;
+        int numberOfSheep = 20;
         sheepList = new List<GameObject>();
 
         // Here the flock is created.

@@ -14,8 +14,9 @@ public class SheepBehaviour : MonoBehaviour {
     private float maxSpeed;         // Maximum speed.
     private float neighborDist;     // Detection range.
     private float separation;       // Separation between two boids.
-    private float dogSeparation;    // Distance for seperation from dog.
     private float dogDetection;     // Range where the sheep sees the dog.
+    private float dogSepDist;       // Distance for seperation from dog.
+    private float obstSepDist;      // Distance for obstacle seperation.
     private float rotation;
     private float rotationSpeed;
 
@@ -34,12 +35,13 @@ public class SheepBehaviour : MonoBehaviour {
         maxForce = 0.01f;
         fixedMaxSpeed = 0.08f;
         maxSpeed = fixedMaxSpeed;
-        neighborDist = 5.0f;   // Neighbor detection range always needs to be higher than separation.
-        separation = 2.0f;     // The distance for the seperation-force to apply.
-        dogDetection = 14.0f;
-        dogSeparation = 2.0f;
-        rotation = 0.0f;
-        rotationSpeed = 2.0f;
+        neighborDist = 8;   // Neighbor detection range always needs to be higher than separation.
+        separation = 2;     // The distance for the seperation-force to apply.
+        dogDetection = 14;
+        dogSepDist = 3;
+        obstSepDist = 4;
+        rotation = 0;
+        rotationSpeed = 2;
 
         graze = false;
         collision = false;
@@ -73,20 +75,16 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 coh = cohesion(sheepList);
         //Vector2 grass = cohesion(grassList);
 
+        // If there is a collision with a solid object.
         if (collision) {
-            collide = collide.multS(100);
-            //Debug.Log(collide);
-            Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(collide.x, 0, collide.y) * 100)), Color.green);
+            collide = collide.multS(0.8f);
         }
+
         // Arbitrarily weight these forces.
-        dog = dog.multS(0.4f);
+        dog = dog.multS(0.5f);
         sep = sep.multS(0.3f);
         ali = ali.multS(0.2f);
-        coh = coh.multS(0.1f);
-
-        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(sep.x, 0, sep.y) * 100)), Color.red);
-        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(ali.x, 0, ali.y) * 200)), Color.blue);
-        //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(coh.x, 0, coh.y) * 100)), Color.green);
+        coh = coh.multS(0.3f);
 
         // Add the force vectors to acceleration.
         applyForce(collide);
@@ -147,6 +145,14 @@ public class SheepBehaviour : MonoBehaviour {
         animator.SetFloat("speed", speed);
     }
 
+    void OnTriggerEnter(Collider other) {
+        // If the other object is not grass, sheep or sheepdog then collision is true.
+        if (!other.CompareTag("Grass") && !other.CompareTag("Sheep") && !other.CompareTag("Sheepdog")) {
+            collide = separate(null, other.gameObject);
+            collision = true;
+        }
+    }
+
     void OnTriggerStay(Collider other) {
         // Check if the other object is indeed a sheep.
         if (other.CompareTag("Grass")) {
@@ -158,26 +164,17 @@ public class SheepBehaviour : MonoBehaviour {
                 graze = false;
             }
         }
-
-        // If the other object is not grass, sheep or sheepdog then collision is true.
-        if (!other.CompareTag("Grass") && !other.CompareTag("Sheep") && !other.CompareTag("Sheepdog")) {
-            collide = separate(null, other.gameObject);
-            //Debug.Log(collide);
-            collision = true;
-        }
-        else {
-            collision = false;
-        }
     }
 
     void OnTriggerExit(Collider other) {
         graze = false;
+        collision = false;
     }
 
     // Separation.
     // Method checks for nearby boids and steers away.
     private Vector2 separate(List<GameObject> list, GameObject single) {
-        Vector2 sum = new Vector2(0.0f, 0.0f);
+        Vector2 sum = new Vector2(0, 0);
         int count = 0;
 
         // If the argument is not a single object but a list...
@@ -205,7 +202,18 @@ public class SheepBehaviour : MonoBehaviour {
             float d = position.dist(new Vector2(single.transform.position.x, single.transform.position.z));
 
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
-            if (d < dogSeparation) {
+            if (d < dogSepDist && single.CompareTag("Sheepdog")) {
+                // Calculate vector pointing away from neighbor.
+                Vector2 locationcopy = new Vector2(position.x, position.y);
+                Vector2 diff = locationcopy.sub(new Vector2(single.transform.position.x, single.transform.position.z));
+
+                diff = diff.normalize();
+                diff = diff.divS(d);        // Weight by distance.
+                sum = sum.add(diff);
+                count++;                    // Keep track of how many.
+            }
+            // This is for seperation with obstacles.
+            else if (d < obstSepDist) {
                 // Calculate vector pointing away from neighbor.
                 Vector2 locationcopy = new Vector2(position.x, position.y);
                 Vector2 diff = locationcopy.sub(new Vector2(single.transform.position.x, single.transform.position.z));
