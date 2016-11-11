@@ -31,10 +31,14 @@ public class TerrainGenerator : MonoBehaviour {
         tileList.Add(fenceEnd);
         tileList.Add(fenceCorner);
 
-        string levelString = level1.text;
-
         offSet = 2;
 
+        // Here the actual grid/terrain is generated.
+        gridCreator();
+    }
+
+    private void gridCreator() {
+        string levelString = level1.text;
         List<string> levelRow = new List<string>();
         List<string> levelColumn = new List<string>();
 
@@ -66,6 +70,7 @@ public class TerrainGenerator : MonoBehaviour {
 
                 int random = Random.Range(0, 3);
 
+                // Tiletype 0 is grass.
                 if (tileType[row, col] == 0) {
                     switch (random) {
                         case 0:
@@ -78,7 +83,8 @@ public class TerrainGenerator : MonoBehaviour {
                             terrainBlock.transform.GetChild(0).GetComponent<Renderer>().material = grassDark;
                             break;
                     }
-                } else {
+                }
+                else {
                     switch (random) {
                         case 0:
                             terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material = grassLight;
@@ -90,6 +96,13 @@ public class TerrainGenerator : MonoBehaviour {
                             terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material = grassDark;
                             break;
                     }
+
+                    float green = 0.6f;
+
+                    float red = terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material.color.r;
+                    float blue = terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material.color.b;
+
+                    terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material.color = new Color(red, green, blue);
                 }
             }
         }

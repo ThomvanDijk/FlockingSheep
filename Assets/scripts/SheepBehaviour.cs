@@ -7,6 +7,7 @@ public class SheepBehaviour : MonoBehaviour {
     private Vector2 position;
     private Vector2 velocity;
     private Vector2 acceleration;
+    private Vector2 collide;
     private Animator animator;
     private float maxForce;         // Maximum steering force.
     private float fixedMaxSpeed;
@@ -19,6 +20,7 @@ public class SheepBehaviour : MonoBehaviour {
     private float rotationSpeed;
 
     private bool graze;
+    private bool collision;
 
     // Use this for initialization.
     void Start() {
@@ -26,6 +28,7 @@ public class SheepBehaviour : MonoBehaviour {
         float angle = (Random.Range(0, 101) * 0.01f) * (Mathf.PI * 2);
         velocity = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
         acceleration = new Vector2(0, 0);
+        collide = new Vector2(0, 0);
         animator = GetComponent<Animator>();
 
         maxForce = 0.01f;
@@ -39,6 +42,7 @@ public class SheepBehaviour : MonoBehaviour {
         rotationSpeed = 2.0f;
 
         graze = false;
+        collision = false;
     }
 
     // UpdateSheep is called from the FlockManager class.
@@ -50,7 +54,7 @@ public class SheepBehaviour : MonoBehaviour {
     // We accumulate a new acceleration each time based on three rules.
     public void flock(List<GameObject> sheepList, GameObject sheepdog) {
         // Dependent on the distance of the dog the sheep walk faster or not.
-        float distanceFromDog = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
+        float distanceFromDog = position.dist(new Vector2(sheepdog.transform.position.x, sheepdog.transform.position.z));
 
         if (distanceFromDog > dogDetection) {
             maxSpeed = 0;
@@ -69,6 +73,11 @@ public class SheepBehaviour : MonoBehaviour {
         Vector2 coh = cohesion(sheepList);
         //Vector2 grass = cohesion(grassList);
 
+        if (collision) {
+            collide = collide.multS(100);
+            //Debug.Log(collide);
+            Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(collide.x, 0, collide.y) * 100)), Color.green);
+        }
         // Arbitrarily weight these forces.
         dog = dog.multS(0.4f);
         sep = sep.multS(0.3f);
@@ -80,6 +89,7 @@ public class SheepBehaviour : MonoBehaviour {
         //Debug.DrawLine(this.transform.position, (this.transform.position + (new Vector3(coh.x, 0, coh.y) * 100)), Color.green);
 
         // Add the force vectors to acceleration.
+        applyForce(collide);
         applyForce(dog);
         applyForce(sep);
         applyForce(ali);
@@ -99,10 +109,7 @@ public class SheepBehaviour : MonoBehaviour {
     // Method to update position.
     private void updatePosition() {
         velocity = velocity.add(acceleration);
-
-        //if (maxSpeed > 0) {
-            velocity = velocity.limit(maxSpeed);
-        //}
+        velocity = velocity.limit(maxSpeed);
         position = position.add(velocity);   
         acceleration = acceleration.multS(0);   // Reset acceleration.
 
@@ -141,7 +148,6 @@ public class SheepBehaviour : MonoBehaviour {
     }
 
     void OnTriggerStay(Collider other) {
-
         // Check if the other object is indeed a sheep.
         if (other.CompareTag("Grass")) {
 
@@ -152,6 +158,16 @@ public class SheepBehaviour : MonoBehaviour {
                 graze = false;
             }
         }
+
+        // If the other object is not grass, sheep or sheepdog then collision is true.
+        if (!other.CompareTag("Grass") && !other.CompareTag("Sheep") && !other.CompareTag("Sheepdog")) {
+            collide = separate(null, other.gameObject);
+            //Debug.Log(collide);
+            collision = true;
+        }
+        else {
+            collision = false;
+        }
     }
 
     void OnTriggerExit(Collider other) {
@@ -160,14 +176,14 @@ public class SheepBehaviour : MonoBehaviour {
 
     // Separation.
     // Method checks for nearby boids and steers away.
-    private Vector2 separate(List<GameObject> sheepList, GameObject sheepdog) {
+    private Vector2 separate(List<GameObject> list, GameObject single) {
         Vector2 sum = new Vector2(0.0f, 0.0f);
         int count = 0;
 
-        // If the argument is not a dog but a sheeplist...
-        if (sheepdog == null) {
+        // If the argument is not a single object but a list...
+        if (single == null) {
             // For every boid in the system, check if it's too close.
-            foreach (var other in sheepList) {
+            foreach (var other in list) {
                 float d = position.dist(other.GetComponent<SheepBehaviour>().position);
 
                 // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
@@ -184,15 +200,15 @@ public class SheepBehaviour : MonoBehaviour {
             }
         }
 
-        // If the argument is not a sheeplist but a dog...
-        if (sheepList == null) {
-            float d = position.dist(sheepdog.GetComponent<DogBehaviour>().position);
+        // If the argument is not a list but a single object...
+        if (list == null) {
+            float d = position.dist(new Vector2(single.transform.position.x, single.transform.position.z));
 
             // If the distance is greater than 0 and less than an arbitrary amount (0 when you are yourself).
             if (d < dogSeparation) {
                 // Calculate vector pointing away from neighbor.
                 Vector2 locationcopy = new Vector2(position.x, position.y);
-                Vector2 diff = locationcopy.sub(sheepdog.GetComponent<DogBehaviour>().position);
+                Vector2 diff = locationcopy.sub(new Vector2(single.transform.position.x, single.transform.position.z));
 
                 diff = diff.normalize();
                 diff = diff.divS(d);        // Weight by distance.
