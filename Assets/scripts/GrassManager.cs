@@ -47,6 +47,9 @@ public class GrassManager : MonoBehaviour {
                     blue = transform.GetChild(0).GetComponent<Renderer>().material.color.b;
 
                     transform.GetChild(0).GetComponent<Renderer>().material.color = new Color(red, green, blue);
+
+                    // Scale the grass on the tiles, do x 0.01 because grassvalue is 100.
+                    transform.GetChild(1).GetComponent<Transform>().localScale = new Vector3(1, grassValue * 0.01f, 1);
                 }
                 if (grassValue <= 0 && !gaveScore) {
                     ScoreManager.score += 1;

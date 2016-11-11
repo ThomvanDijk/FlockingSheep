@@ -12,6 +12,7 @@ public class TerrainGenerator : MonoBehaviour {
     public GameObject fenceMid;
     public GameObject fenceEnd;
     public GameObject fenceCorner;
+    public GameObject grassAsset;
 
     public Material grassLight;
     public Material grassMed;
@@ -67,6 +68,18 @@ public class TerrainGenerator : MonoBehaviour {
 
                 // Create cube.
                 GameObject terrainBlock = (GameObject)Instantiate(tileList[tileType[row, col]], pos, tileList[0].transform.rotation);
+
+                if (tileType[row, col] == 0) {
+                    // Create additional grass.
+                    GameObject grass = (GameObject)Instantiate(grassAsset, new Vector3(
+                        terrainBlock.transform.position.x + Random.Range(-5, 5) * 0.1f,
+                        terrainBlock.transform.position.y,
+                        terrainBlock.transform.position.z + Random.Range(-5, 5) * 0.1f), 
+                        Quaternion.Euler(0, Random.Range(0, 365), 0));
+
+                    // Add the grass asset as a child
+                    grass.transform.parent = terrainBlock.transform;
+                }
 
                 int random = Random.Range(0, 3);
 
