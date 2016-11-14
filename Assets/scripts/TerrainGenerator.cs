@@ -140,7 +140,6 @@ public class TerrainGenerator : MonoBehaviour {
                     if (tileType[row - 1, col] >= 3 && tileType[row, col - 1] >= 3) {
                         terrainBlock.transform.Rotate(new Vector3(0, -90, 0));
                     }
-
                     if (tileType[row, col + 1] >= 3 && tileType[row - 1, col] >= 3) {
                         terrainBlock.transform.Rotate(new Vector3(0, 180, 0));
                     }

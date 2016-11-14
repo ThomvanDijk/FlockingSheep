@@ -20,7 +20,7 @@ public class GrassManager : MonoBehaviour {
         stayedLongEnough = 3; // 3 seconds.
         onGrassTimer = 0;
         gaveScore = false;
-        grazeSpeed = 3;
+        grazeSpeed = 8;
     }
 
     void OnTriggerStay(Collider other) {
