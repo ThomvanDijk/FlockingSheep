@@ -37,8 +37,8 @@ public class SheepBehaviour : MonoBehaviour {
         maxSpeed = fixedMaxSpeed;
         neighborDist = 8;   // Neighbor detection range always needs to be higher than separation.
         separation = 2;     // The distance for the seperation-force to apply.
-        dogDetection = 14;
-        dogSepDist = 3;
+        dogDetection = 15;
+        dogSepDist = 2.5f;
         obstSepDist = 4;
         rotation = 0;
         rotationSpeed = 2;
@@ -64,7 +64,7 @@ public class SheepBehaviour : MonoBehaviour {
         else {
             maxSpeed = map(distanceFromDog, 0, dogDetection, fixedMaxSpeed, 0);
 
-            if (maxSpeed < 0.005f) {
+            if (maxSpeed < 0.01f) {
                 maxSpeed = 0;
             }
         }
@@ -84,7 +84,7 @@ public class SheepBehaviour : MonoBehaviour {
         dog = dog.multS(0.5f);
         sep = sep.multS(0.3f);
         ali = ali.multS(0.2f);
-        coh = coh.multS(0.3f);
+        coh = coh.multS(0.2f);
 
         // Add the force vectors to acceleration.
         applyForce(collide);

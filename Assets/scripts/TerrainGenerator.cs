@@ -117,6 +117,37 @@ public class TerrainGenerator : MonoBehaviour {
 
                     terrainBlock.transform.GetChild(1).GetComponent<Renderer>().material.color = new Color(red, green, blue);
                 }
+
+                // Here check if the tile is a straight fence, if it is then rotate it correctly.
+                if (tileType[row, col] == 3) {
+                    if (tileType[row - 1, col] >= 3 || tileType[row + 1, col] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, 90, 0));
+                    }
+                }
+
+                // Fence end.
+                if (tileType[row, col] == 4) {
+                    if (tileType[row - 1, col] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, -90, 0));
+                    }
+                    if (tileType[row + 1, col] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, 90, 0));
+                    }
+                }
+
+                // Fence corner.
+                if (tileType[row, col] == 5) {
+                    if (tileType[row - 1, col] >= 3 && tileType[row, col - 1] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, -90, 0));
+                    }
+
+                    if (tileType[row, col + 1] >= 3 && tileType[row - 1, col] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, 180, 0));
+                    }
+                    if (tileType[row, col + 1] >= 3 && tileType[row + 1, col] >= 3) {
+                        terrainBlock.transform.Rotate(new Vector3(0, 90, 0));
+                    }
+                }
             }
         }
     }
