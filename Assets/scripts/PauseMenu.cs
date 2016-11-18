@@ -6,7 +6,7 @@ using System.Collections;
 public class PauseMenu : MonoBehaviour {
 
     // Scene states ie menu's.
-    public enum SceneStates { Pause, End, Intro0, Intro1, Intro2, GameOver };
+    public enum SceneStates { Pause, End, InGame, Intro0, Intro1, Intro2, GameOver };
     public static SceneStates currentstate;
 
     // Scene objects.
@@ -53,6 +53,10 @@ public class PauseMenu : MonoBehaviour {
                 endScreen.SetActive(true);
                 break;
 
+            case SceneStates.InGame:
+                disableAllScenes();
+                break;
+
             case SceneStates.Intro0:
                 disableAllScenes();
                 intro0.SetActive(true);
@@ -85,7 +89,7 @@ public class PauseMenu : MonoBehaviour {
 
     public void onResume() {
         mainCamera.GetComponent<SmoothCamera>().start = false;
-        disableAllScenes();
+        currentstate = SceneStates.InGame;
     }
 
     public void onRestart() {
