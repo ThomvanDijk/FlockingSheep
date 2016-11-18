@@ -6,7 +6,7 @@ using System.Collections;
 public class PauseMenu : MonoBehaviour {
 
     // Scene states ie menu's.
-    public enum SceneStates { Pause, End, InGame, Intro0, Intro1, Intro2, GameOver };
+    public enum SceneStates { Pause, End, InGame, Intro0, Intro1, Intro2 };
     public static SceneStates currentstate;
 
     // Scene objects.
@@ -15,7 +15,6 @@ public class PauseMenu : MonoBehaviour {
     public GameObject intro0;
     public GameObject intro1;
     public GameObject intro2;
-    public GameObject gameOver;
     public GameObject mainCamera; // Here we can acces the SmoothCamera script.
 
     private List<GameObject> sceneList;
@@ -29,7 +28,6 @@ public class PauseMenu : MonoBehaviour {
         sceneList.Add(intro0);
         sceneList.Add(intro1);
         sceneList.Add(intro2);
-        sceneList.Add(gameOver);
 
         currentstate = SceneStates.Intro0;
     }
@@ -70,11 +68,6 @@ public class PauseMenu : MonoBehaviour {
             case SceneStates.Intro2:
                 disableAllScenes();
                 intro2.SetActive(true);
-                break;
-
-            case SceneStates.GameOver:
-                disableAllScenes();
-                gameOver.SetActive(true);
                 break;
 
         }
