@@ -3,11 +3,6 @@ using System.Collections;
 
 public class LightBehaviour : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-        
-    }
-	
 	// Update is called once per frame
 	void Update () {
         float rotation = map(ScoreManager.countdown, 0, 100, 0, 180);

@@ -118,7 +118,7 @@ public class DogBehaviour : MonoBehaviour {
 
     private void setTarget() {
         // Save the place where the mouse clicked right.
-        if (Input.GetMouseButtonDown(1)) {
+        if (Input.GetMouseButtonDown(1) || Input.GetMouseButtonDown(0)) {
 
             RaycastHit hit; // Position where mouse hits the raycast.
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
