@@ -13,7 +13,6 @@ public class MenuManager : MonoBehaviour {
     public GameObject creditsMenu;
     public GameObject levelsMenu;
 
-	// Update is called once per frame
 	void Update () {
 
         // Checks current scene state.
